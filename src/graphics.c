@@ -2,11 +2,35 @@
 
 context video;
 
-texture cobbleTexture;
-texture blueBrickTexture;
-texture floorTexture;
+texture cobbleTexture;     
+texture blueBrickTexture;  
+texture floorTexture;      
+texture ceilingTexture;    
+texture woodFloorCarpetTL; 
+texture woodFloorCarpetTR; 
+texture woodFloorCarpetBL; 
+texture woodFloorCarpetBR; 
+texture woodFloor;
 
-int loadBMP(texture* tex, const char* filename)
+texture* wallTextures[2] = {&cobbleTexture, &blueBrickTexture};
+texture* floorTextures[6] = 
+{
+  &floorTexture, 
+  &woodFloorCarpetTL,
+  &woodFloorCarpetTR, 
+  &woodFloorCarpetBL,
+  &woodFloorCarpetBR,
+  &woodFloor
+};
+texture* ceilingTextures[1] = {&ceilingTexture};
+
+texture* textures[9] = {
+             &cobbleTexture, &blueBrickTexture, 
+             &floorTexture, &woodFloorCarpetTL, &woodFloorCarpetTR, &woodFloorCarpetBL, &woodFloorCarpetBR, &woodFloor,
+             &ceilingTexture
+           };
+
+int loadBMP(texture* tex)
 {
   uint32_t imageDataAddress;
   int width;
@@ -15,21 +39,20 @@ int loadBMP(texture* tex, const char* filename)
   uint16_t bitDepth;
   uint8_t byteDepth;
   uint32_t* pixels;
-
-  printf("Loading BMP file: %s\n", filename);
   
-  FILE* file = fopen(filename, "rb");
+  printf("Loading BMP file: %s\n", tex->filename);
+  
+  FILE* file = fopen(tex->filename, "rb");
   if (!file)
   {
-    printf("File : %s failed to open\n", filename);
+    printf("File : %s failed to open\n", tex->filename);
     return 0;
   }
   if(!(fgetc(file) == 'B' && fgetc(file) == 'M'))
   {
-    printf("File : %s is not a valid bitmap\n", filename);
+    printf("File : %s is not a valid bitmap\n", tex->filename);
     return 0;
   }
-  printf("test\n");
   fseek(file, 8, SEEK_CUR);
   fread(&imageDataAddress, 4, 1, file);
   fseek(file, 4, SEEK_CUR);
@@ -40,7 +63,7 @@ int loadBMP(texture* tex, const char* filename)
   
   if (bitDepth != 32)
   {
-    printf("Error reading non-32 bit BMP file %s\n", filename);
+    printf("Error reading non-32 bit BMP file %s\n", tex->filename);
     printf("Bit depth: %d\n", bitDepth);
     return 0;
   }
@@ -64,27 +87,43 @@ int loadBMP(texture* tex, const char* filename)
   tex->height = height;
   tex->pixels = pixels;
 
-
-  printf("pixel 1 = 0x%08X\n", tex->pixels[0]);
+  printf("width: %d height: %d", tex->width, tex->height);
+  printf("first pixel : 0x%08X\n", tex->pixels[0]);
+  
+  if (file == NULL)
+  {
+    printf("file null: %d\n");
+  }
+ 
   fclose(file);
+  printf("LALALALLLLLLLLLL\n");
   return 1;
 }
 
 void initTextures()
 {
-  if(!loadBMP(&cobbleTexture, "textures/cobbleTexture.bmp"))
+  cobbleTexture    .filename = "textures/cobbleTexture.bmp";
+  blueBrickTexture .filename = "textures/blueBrickTexture.bmp";
+  floorTexture     .filename = "textures/floorTexture.bmp";
+  ceilingTexture   .filename = "textures/ceilingTexture.bmp";
+  woodFloorCarpetTL.filename = "textures/woodFloorCarpetBL.bmp";
+  woodFloorCarpetTR.filename = "textures/woodFloorCarpetBR.bmp";
+  woodFloorCarpetBL.filename = "textures/woodFloorCarpetTL.bmp";
+  woodFloorCarpetBR.filename = "textures/woodFloorCarpetTR.bmp";
+  woodFloor        .filename = "textures/woodFloor.bmp";
+  
+  for (int i = 0; i < 9; i++)
   {
-    fprintf(stderr, "failed to load cobbleTexture");
+    printf("texture name: %s\n", textures[i]->filename);
+    if (!loadBMP(textures[i]))
+    {
+      printf("failed to load texture %s\n", textures[i]->filename);
+    }
+    else
+    {
+      printf("success\n");
+    }
   }
-  if(!loadBMP(&blueBrickTexture, "textures/blueBrickTexture.bmp"))
-  {
-    fprintf(stderr, "failed to load blueBrickTexture");
-  }
-  if(!loadBMP(&floorTexture, "textures/floorTexture.bmp"))
-  {
-    fprintf(stderr, "failed to load floorTexture");
-  }
-
 }
 
 void init(const char* title, int x, int y)

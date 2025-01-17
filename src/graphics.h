@@ -13,6 +13,7 @@ typedef struct context context;
 
 struct texture 
 {
+  const char* filename;
   int width;
   int height;
   uint32_t* pixels;
@@ -23,8 +24,18 @@ extern context video;
 extern texture cobbleTexture;
 extern texture blueBrickTexture;
 extern texture floorTexture;  
+extern texture ceilingTexture;
+extern texture woodFloorCarpetTL;
+extern texture woodFloorCarpetTR;
+extern texture woodFloorCarpetBL;
+extern texture woodFloorCarpetBR;
+extern texture woodFloor;
 
-int loadBMP(texture* tex, const char* filename);
+extern texture* wallTextures[2];
+extern texture* floorTextures[6];
+extern texture* ceilingTextures[1];
+
+int loadBMP(texture* tex);
 void initTextures();
 void init(const char* title, int x, int y);
 void destroy();

@@ -5,7 +5,8 @@ void drawTextureLine(texture* texture, int textureView, int textureX, int x, int
 }
 void renderFloor()
 {
-  for (int y = 0; y < HEIGHT; y+=2)
+  const int lineWidth = 2;
+  for (int y = 0; y < HEIGHT; y+=lineWidth)
   {
     vec2 rayDirection0 = 
     {
@@ -31,30 +32,46 @@ void renderFloor()
 
     vec2 floorPosition = 
     {
-      player.position.x + rowDistance * rayDirection0.x,
-      player.position.y + rowDistance * rayDirection0.y
+      player.position.x + (rowDistance * rayDirection0.x),
+      player.position.y + (rowDistance * rayDirection0.y)
     };
+
+    texture* floorPointer = &floorTexture;
 
     for (int x = 0; x < WIDTH; x++)
     {
-      vec2i cell = { (int) floorPosition.x, (int) floorPosition.y };
+      vec2i cell = { floor(floorPosition.x), floor(floorPosition.y) };
+      if (cell.x >= 0 && cell.x <= MAPWIDTH && cell.y >= 0 && cell.y <= MAPHEIGHT)
+      {
+        switch(worldMap[cell.y * MAPWIDTH + cell.x])
+        {
+          case -1: floorPointer = &woodFloorCarpetTL; break;
+          case -2: floorPointer = &woodFloorCarpetTR; break;
+          case -3: floorPointer = &woodFloorCarpetBR; break;
+          case -4: floorPointer = &woodFloorCarpetBL; break;
+          case -5: floorPointer = &woodFloor;         break;
+          default: floorPointer = &floorTexture;      break;
+        }
+      }
       vec2i textureCoordinate = 
       { 
-        (int) (floorTexture.width  * (floorPosition.x - cell.x)) & 63, 
-        (int) (floorTexture.height * (floorPosition.y - cell.y)) & 63
+        (int) (floorPointer->width  * (floorPosition.x - cell.x)) & 63, 
+        (int) (floorPointer->height * (floorPosition.y - cell.y)) & 63
       };
+
       floorPosition.x += floorStep.x;
       floorPosition.y += floorStep.y;
+      uint32_t color;
 
-      uint32_t color = floorTexture.pixels[textureCoordinate.y * floorTexture.width + textureCoordinate.x];
-
-      //printf("texture coord at x: %d, y: %d, = %d, %d\n", x, y, textureCoordinate.x, textureCoordinate.y);
-      for (int i = 0; i < 2 && y + i < HEIGHT; i++)
+      for (int i = 0; i < lineWidth && y + i < HEIGHT; i++)
       {
+        color = floorPointer->pixels[(floorPointer->width * textureCoordinate.y) + textureCoordinate.x];
         video.pixels[(y+i) * WIDTH + x] = color;
+
+        color = ceilingTexture.pixels[(ceilingTexture.width * textureCoordinate.y) + textureCoordinate.x];
         video.pixels[(HEIGHT - (y+i) - 1) * WIDTH + x] = color;
       }
-    } 
+    }
   }
 }
 
@@ -87,7 +104,7 @@ void renderWalls()
 
     struct { int value, side; vec2 position; } hit = { 0, 0, { 0.0f, 0.0f } };
 
-    while (!hit.value)
+    while (hit.value <= 0)
     {
       if (sideDistance.x < sideDistance.y)
       {
@@ -123,8 +140,8 @@ void renderWalls()
       case 1: texturePointer = &cobbleTexture; break;
       case 2: texturePointer = &blueBrickTexture; break;
     }
-
-    int textureX = (int) (wallX * 64);
+    
+    int textureX = (int) (wallX * texturePointer->width);
 
     const int height = (int) (HEIGHT/perpetualDistance);
     int y0 = MAX((HEIGHT/2) - (height / 2), 0);
@@ -143,7 +160,10 @@ void renderWalls()
       {
         textureY0 += textureStep;
         textureY = MIN((int) textureY0, texturePointer->height - 1);
-        video.pixels[y * WIDTH + x + i] = texturePointer->pixels[textureY * texturePointer->width + textureX];
+        uint32_t color = texturePointer->pixels[textureY * texturePointer->width + textureX];
+
+        if (hit.side == 1) color = (color >> 1) & 0x007F7F7F;
+        video.pixels[y * WIDTH + x + i] = color;
       }
     }
   }

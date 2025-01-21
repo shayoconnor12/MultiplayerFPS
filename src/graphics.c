@@ -11,6 +11,7 @@ texture woodFloorCarpetTR;
 texture woodFloorCarpetBL; 
 texture woodFloorCarpetBR; 
 texture woodFloor;
+texture spriteTest;
 
 texture* wallTextures[2] = {&cobbleTexture, &blueBrickTexture};
 texture* floorTextures[6] = 
@@ -23,6 +24,7 @@ texture* floorTextures[6] =
   &woodFloor
 };
 texture* ceilingTextures[1] = {&ceilingTexture};
+texture* spriteTextures[1] = {&spriteTest};
 
 texture* textures[9] = {
              &cobbleTexture, &blueBrickTexture, 
@@ -111,6 +113,7 @@ void initTextures()
   woodFloorCarpetBL.filename = "textures/woodFloorCarpetTL.bmp";
   woodFloorCarpetBR.filename = "textures/woodFloorCarpetTR.bmp";
   woodFloor        .filename = "textures/woodFloor.bmp";
+  spriteTest.filename = "textures/spriteTest.bmp";
   
   for (int i = 0; i < 9; i++)
   {
@@ -124,6 +127,9 @@ void initTextures()
       printf("success\n");
     }
   }
+  
+  loadBMP(&spriteTest);
+
 }
 
 void init(const char* title, int x, int y)
@@ -141,6 +147,8 @@ void init(const char* title, int x, int y)
   video.texture = SDL_CreateTexture(video.renderer, SDL_PIXELFORMAT_ARGB8888,
                               SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);  
   ASSERT(video.texture, "Texture creation failed: %s\n", SDL_GetError());
+
+
 }
 
 void destroy()

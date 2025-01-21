@@ -30,10 +30,12 @@ extern texture woodFloorCarpetTR;
 extern texture woodFloorCarpetBL;
 extern texture woodFloorCarpetBR;
 extern texture woodFloor;
+extern texture spriteTest;
 
 extern texture* wallTextures[2];
 extern texture* floorTextures[6];
 extern texture* ceilingTextures[1];
+extern texture* spriteTextures[1];
 
 int loadBMP(texture* tex);
 void initTextures();

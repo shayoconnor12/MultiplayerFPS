@@ -5,6 +5,7 @@
 
 int main(int argc, char** argv)
 {
+
   init("Hello, World", 200, 200); 
   player.position = (vec2) { 2, 2 };
   player.direction = (vec2) {1.0f, 0.1f};

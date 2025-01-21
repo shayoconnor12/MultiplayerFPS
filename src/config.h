@@ -14,8 +14,8 @@
 
 #define PI 3.1415926589
 
-#define WIDTH 1260
-#define HEIGHT 720
+#define WIDTH 960
+#define HEIGHT 600
 
 static int worldMap[MAPWIDTH*MAPHEIGHT] = 
 {

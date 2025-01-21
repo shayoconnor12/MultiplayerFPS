@@ -1,10 +1,5 @@
+Wolfenstein 3D style software renderer.
 
-A wolfenstein3d inspired first person shooter game.
-Still in early stages of development
+Has been tested on linux with gcc, run make.sh, SDL2 must be installed in usr/local/include first.
 
-To run:
-
-On linux with GCC: just run make.sh then ./main
-macos probably can do the same
-
-on windows: please use a real operating system
+Finished for now - sprites and a more sophisticated cross-platform build system to come later
